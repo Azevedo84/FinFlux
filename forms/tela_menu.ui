@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Menu_Principal</class>
+ <widget class="QMainWindow" name="Menu_Principal">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>786</width>
+    <height>561</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Menu Principal</string>
+  </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QWidget" name="widget" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QWidget" name="widget_2" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QWidget" name="widget_5" native="true">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(172, 172, 172);</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <property name="leftMargin">
+              <number>6</number>
+             </property>
+             <property name="topMargin">
+              <number>6</number>
+             </property>
+             <property name="rightMargin">
+              <number>6</number>
+             </property>
+             <property name="bottomMargin">
+              <number>6</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>15</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Conta Corrente</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="widget_6" native="true">
+               <widget class="QPushButton" name="btn_Entradas">
+                <property name="geometry">
+                 <rect>
+                  <x>30</x>
+                  <y>20</y>
+                  <width>81</width>
+                  <height>41</height>
+                 </rect>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="text">
+                 <string>Entradas</string>
+                </property>
+               </widget>
+               <widget class="QPushButton" name="btn_Saidas">
+                <property name="geometry">
+                 <rect>
+                  <x>130</x>
+                  <y>20</y>
+                  <width>81</width>
+                  <height>41</height>
+                 </rect>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="text">
+                 <string>Saídas</string>
+                </property>
+               </widget>
+               <widget class="QPushButton" name="btn_Transf">
+                <property name="geometry">
+                 <rect>
+                  <x>230</x>
+                  <y>20</y>
+                  <width>101</width>
+                  <height>41</height>
+                 </rect>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="text">
+                 <string>Transferências</string>
+                </property>
+               </widget>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget_4" native="true">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(172, 172, 172);</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <property name="leftMargin">
+              <number>6</number>
+             </property>
+             <property name="topMargin">
+              <number>6</number>
+             </property>
+             <property name="rightMargin">
+              <number>6</number>
+             </property>
+             <property name="bottomMargin">
+              <number>6</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>15</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Cartão de Crédito</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="widget_7" native="true">
+               <widget class="QPushButton" name="btn_desp_cartao">
+                <property name="geometry">
+                 <rect>
+                  <x>50</x>
+                  <y>20</y>
+                  <width>81</width>
+                  <height>41</height>
+                 </rect>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="text">
+                 <string>Despesas</string>
+                </property>
+               </widget>
+               <widget class="QPushButton" name="btn_pagar_cartao">
+                <property name="geometry">
+                 <rect>
+                  <x>160</x>
+                  <y>20</y>
+                  <width>81</width>
+                  <height>41</height>
+                 </rect>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="text">
+                 <string>Pagar
+Cartão</string>
+                </property>
+               </widget>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="widget_3" native="true"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>786</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuCadastros">
+    <property name="title">
+     <string>Cadastros</string>
+    </property>
+    <addaction name="action_Banco"/>
+    <addaction name="action_Categoria"/>
+    <addaction name="action_Cidade"/>
+    <addaction name="action_Estab"/>
+    <addaction name="action_Grupo"/>
+    <addaction name="action_Tipo"/>
+   </widget>
+   <widget class="QMenu" name="menuMovimenta_o">
+    <property name="title">
+     <string>Relatórios</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionMovimenta_o"/>
+    <addaction name="actionGr_fico_Despesas"/>
+    <addaction name="actionSaldos_4"/>
+   </widget>
+   <widget class="QMenu" name="menuMovimenta_o_2">
+    <property name="title">
+     <string>Movimentação</string>
+    </property>
+    <addaction name="actionAlterar"/>
+   </widget>
+   <addaction name="menuCadastros"/>
+   <addaction name="menuMovimenta_o_2"/>
+   <addaction name="menuMovimenta_o"/>
+  </widget>
+  <action name="Menu_Incluir_Sol">
+   <property name="text">
+    <string>Incluir Solicitação</string>
+   </property>
+  </action>
+  <action name="Menu_Consulta_Sol">
+   <property name="text">
+    <string>Consulta Solicitação</string>
+   </property>
+  </action>
+  <action name="Menu_Consome_OS">
+   <property name="text">
+    <string>Consumo de Materiais</string>
+   </property>
+  </action>
+  <action name="Menu_Incluir_OC">
+   <property name="text">
+    <string>Incluir Ordem</string>
+   </property>
+  </action>
+  <action name="action_Banco">
+   <property name="text">
+    <string>Bancos</string>
+   </property>
+  </action>
+  <action name="actionIncluir_Despesa">
+   <property name="text">
+    <string>Incluir Despesa</string>
+   </property>
+  </action>
+  <action name="actionIncluir_Receita">
+   <property name="text">
+    <string>Incluir Receita</string>
+   </property>
+  </action>
+  <action name="actionEntre_Contas">
+   <property name="text">
+    <string>Entre Contas</string>
+   </property>
+  </action>
+  <action name="actionRenda_Fixa">
+   <property name="text">
+    <string>Renda Fixa</string>
+   </property>
+  </action>
+  <action name="actionRenda_Vari_vel">
+   <property name="text">
+    <string>Renda Variável</string>
+   </property>
+  </action>
+  <action name="actionCriptoMoedas">
+   <property name="text">
+    <string>CriptoMoedas</string>
+   </property>
+  </action>
+  <action name="actionAvenue">
+   <property name="text">
+    <string>Avenue</string>
+   </property>
+  </action>
+  <action name="actionAvenue_2">
+   <property name="text">
+    <string>Avenue</string>
+   </property>
+  </action>
+  <action name="actionAvenue_3">
+   <property name="text">
+    <string>Avenue</string>
+   </property>
+  </action>
+  <action name="actionEditar_Receita">
+   <property name="text">
+    <string>Editar Receita</string>
+   </property>
+  </action>
+  <action name="actionExcluir_Receita">
+   <property name="text">
+    <string>Excluir Receita</string>
+   </property>
+  </action>
+  <action name="actionExcluir_Transfer_ncia">
+   <property name="text">
+    <string>Excluir Transferência</string>
+   </property>
+  </action>
+  <action name="actionEditar_Despesa">
+   <property name="text">
+    <string>Editar Despesa</string>
+   </property>
+  </action>
+  <action name="actionExcluir_Despesa">
+   <property name="text">
+    <string>Excluir Despesa</string>
+   </property>
+  </action>
+  <action name="actionMovimenta_o_de_Despesas">
+   <property name="text">
+    <string>Movimentação de Despesas</string>
+   </property>
+  </action>
+  <action name="actionReceitas_Despesas">
+   <property name="text">
+    <string>Receitas/Despesas</string>
+   </property>
+  </action>
+  <action name="actionMovimenta_o_de_Receitas">
+   <property name="text">
+    <string>Movimentação de Receitas</string>
+   </property>
+  </action>
+  <action name="actionSaldos">
+   <property name="text">
+    <string>Saldos</string>
+   </property>
+  </action>
+  <action name="actionIncluir_Or_amentos">
+   <property name="text">
+    <string>Incluir Orçamento</string>
+   </property>
+  </action>
+  <action name="actionEditar_Or_amento">
+   <property name="text">
+    <string>Editar Orçamento</string>
+   </property>
+  </action>
+  <action name="actionExcluir_Or_amento">
+   <property name="text">
+    <string>Excluir Orçamento</string>
+   </property>
+  </action>
+  <action name="actionComparativo_Or_ado_Real">
+   <property name="text">
+    <string>Comparativo Orçado/Real</string>
+   </property>
+  </action>
+  <action name="action_Categoria">
+   <property name="text">
+    <string>Categorias</string>
+   </property>
+  </action>
+  <action name="action_Grupo">
+   <property name="text">
+    <string>Grupo de Despesa</string>
+   </property>
+  </action>
+  <action name="action_Tipo">
+   <property name="text">
+    <string>Tipos de Contas</string>
+   </property>
+  </action>
+  <action name="action_Cidade">
+   <property name="text">
+    <string>Cidades</string>
+   </property>
+  </action>
+  <action name="actionIncluir_Faturas">
+   <property name="text">
+    <string>Incluir Faturas</string>
+   </property>
+  </action>
+  <action name="actionIncluir_Bens">
+   <property name="text">
+    <string>Incluir Bens</string>
+   </property>
+  </action>
+  <action name="actionEditar_Bens">
+   <property name="text">
+    <string>Editar Bens</string>
+   </property>
+  </action>
+  <action name="actionExcluir_Bens">
+   <property name="text">
+    <string>Excluir Bens</string>
+   </property>
+  </action>
+  <action name="actionIncluir_Estab">
+   <property name="text">
+    <string>Incluir Estab.</string>
+   </property>
+  </action>
+  <action name="actionAlterar_Estab">
+   <property name="text">
+    <string>Alterar Estab.</string>
+   </property>
+  </action>
+  <action name="actionExcluir_Estab">
+   <property name="text">
+    <string>Excluir Estab.</string>
+   </property>
+  </action>
+  <action name="action_Estab">
+   <property name="text">
+    <string>Estabelecimentos</string>
+   </property>
+  </action>
+  <action name="actionEntradas">
+   <property name="text">
+    <string>Entradas</string>
+   </property>
+  </action>
+  <action name="actionTransfer_ncias">
+   <property name="text">
+    <string>Transferências</string>
+   </property>
+  </action>
+  <action name="actionDespesas">
+   <property name="text">
+    <string>Despesas</string>
+   </property>
+  </action>
+  <action name="actionDespesas_Parceladas">
+   <property name="text">
+    <string>Despesas Parceladas</string>
+   </property>
+  </action>
+  <action name="actionPagamento_de_Cart_o">
+   <property name="text">
+    <string>Pagamento de Cartão</string>
+   </property>
+  </action>
+  <action name="actionMovimenta_o">
+   <property name="text">
+    <string>Movimentação</string>
+   </property>
+  </action>
+  <action name="actionGr_fico_Despesas">
+   <property name="text">
+    <string>Gràfico Despesas</string>
+   </property>
+  </action>
+  <action name="actionSaldos_2">
+   <property name="text">
+    <string>Saldos</string>
+   </property>
+  </action>
+  <action name="actionAlterar">
+   <property name="text">
+    <string>Alterar</string>
+   </property>
+  </action>
+  <action name="actionSaldos_3">
+   <property name="text">
+    <string>Saldos</string>
+   </property>
+  </action>
+  <action name="actionSaldos_4">
+   <property name="text">
+    <string>Saldos</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
