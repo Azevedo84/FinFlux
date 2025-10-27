@@ -1,4 +1,4 @@
-from conexao_nuvem import conectar_banco_nuvem
+from banco_dados.conexao_nuvem import conectar_banco_nuvem
 
 conecta = conectar_banco_nuvem()
 try:

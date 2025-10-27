@@ -1,5 +1,5 @@
 import sys
-from conexao_nuvem import conectar_banco_nuvem
+from banco_dados.conexao_nuvem import conectar_banco_nuvem
 
 import inspect
 import os
@@ -7,7 +7,6 @@ import traceback
 
 import pandas as pd
 from sklearn.ensemble import IsolationForest
-from statsmodels.tsa.arima.model import ARIMA
 import matplotlib.pyplot as plt
 
 

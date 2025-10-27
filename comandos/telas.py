@@ -5,7 +5,6 @@ from comandos.cores import fundo_tela, fundo_tela_menu
 import os
 import inspect
 
-import sys
 from PyQt5.QtWidgets import QDesktopWidget, QVBoxLayout, QLabel, QSizePolicy
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QPixmap, QFont, QIcon
@@ -83,8 +82,6 @@ def tamanho_aplicacao(self):
 
         x = (monitor_width - interface_width) // 2
         y = (monitor_height - interface_height) // 2
-
-        print(interface_width, interface_height)
 
         self.setGeometry(x, y, interface_width, interface_height)
 

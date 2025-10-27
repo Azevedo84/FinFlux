@@ -1,12 +1,13 @@
-from conexao_nuvem import conectar_banco_nuvem
+from banco_dados.conexao_nuvem import conectar_banco_nuvem
 
 conecta = conectar_banco_nuvem()
 try:
-    # BRADESCO = 5 / C6 = 6 / NUBANK = 12 / XP = 19 / SAMSUNG = 22
+    # BRADESCO = 5 / C6 = 6 / NUBANK = 12 / XP = 19 / SAMSUNG = 22 / AMAZON = 27
 
-    id_banco = 12
-    fatura = "11/2024"
-    vencimento = "2024-12-09"
+    id_banco = 27
+    mes = "10"
+    ano = "2025"
+    vencimento = "2025-11-15"
 
     cursor = conecta.cursor()
     cursor.execute(f"SELECT id, saldo FROM saldo_banco "
@@ -17,10 +18,11 @@ try:
     id_saldo, saldo = saldo_conta[0]
 
     cursor = conecta.cursor()
-    cursor.execute(f"INSERT INTO cadastro_fatura (ID_SALDO, FATURA, VENCIMENTO, VALOR_FINAL, STATUS) "
-                   f"VALUES ({id_saldo}, '{fatura}', '{vencimento}', 0, 'A');")
+    cursor.execute(f"INSERT INTO cadastro_fatura (ID_SALDO, MES, ANO, VENCIMENTO, VALOR_FINAL, STATUS) "
+                   f"VALUES ({id_saldo}, '{mes}', '{ano}', '{vencimento}', 0, 'A');")
 
     conecta.commit()
+    print("SALVO FATURA")
 
 
 except Exception as e:

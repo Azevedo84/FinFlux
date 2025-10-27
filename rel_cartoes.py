@@ -1,6 +1,6 @@
 import sys
 from forms.tela_rel_cartoes import *
-from conexao_nuvem import conectar_banco_nuvem
+from banco_dados.conexao_nuvem import conectar_banco_nuvem
 from comandos.tabelas import layout_cabec_tab, lanca_tabela
 from comandos.telas import tamanho_aplicacao
 from funcao_padrao import grava_erro_banco, trata_excecao

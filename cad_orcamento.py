@@ -1,15 +1,16 @@
 import sys
 from forms.tela_orcamento import *
-from conexao_nuvem import conectar_banco_nuvem
+from banco_dados.conexao_nuvem import conectar_banco_nuvem
+from banco_dados.controle_erros import grava_erro_banco
 from comandos.telas import tamanho_aplicacao, icone
 from comandos.tabelas import extrair_tabela, lanca_tabela, layout_cabec_tab
 from comandos.conversores import valores_para_float
-from funcao_padrao import grava_erro_banco, trata_excecao, extrair_tabela, lanca_tabela, mensagem_alerta
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5 import QtCore
 from datetime import date
 import inspect
 import os
+import traceback
 
 
 class TelaOrcamento(QMainWindow, Ui_MainWindow):
@@ -17,8 +18,12 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
         super().__init__(parent)
         super().setupUi(self)
 
+        nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
+        self.nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
+
         icone(self, "gremio.png")
         tamanho_aplicacao(self)
+        
         layout_cabec_tab(self.table_Lista)
 
         self.btn_Salvar.clicked.connect(self.verifica_salvamento)
@@ -36,6 +41,42 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
         self.lanca_combo_grupo()
         self.lanca_numero()
         self.data_emissao()
+        
+    def mensagem_alerta(self, mensagem):
+        try:
+            alert = QMessageBox()
+            alert.setIcon(QMessageBox.Warning)
+            alert.setText(mensagem)
+            alert.setWindowTitle("Atenção")
+            alert.setStandardButtons(QMessageBox.Ok)
+            alert.exec_()
+
+        except Exception as e:
+            nome_funcao = inspect.currentframe().f_code.co_name
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
+
+    def trata_excecao(self, nome_funcao, mensagem, arquivo, excecao):
+        try:
+            tb = traceback.extract_tb(excecao)
+            num_linha_erro = tb[-1][1]
+
+            traceback.print_exc()
+            print(f'Houve um problema no arquivo: {arquivo} na função: "{nome_funcao}"\n{mensagem} {num_linha_erro}')
+            self.mensagem_alerta(f'Houve um problema no arquivo:\n\n{arquivo}\n\n'
+                                 f'Comunique o desenvolvedor sobre o problema descrito abaixo:\n\n'
+                                 f'{nome_funcao}: {mensagem}')
+
+            grava_erro_banco(nome_funcao, mensagem, arquivo, num_linha_erro)
+
+        except Exception as e:
+            nome_funcao_trat = inspect.currentframe().f_code.co_name
+            exc_traceback = sys.exc_info()[2]
+            tb = traceback.extract_tb(exc_traceback)
+            num_linha_erro = tb[-1][1]
+            print(f'Houve um problema no arquivo: {self.nome_arquivo} na função: "{nome_funcao_trat}"\n'
+                  f'{e} {num_linha_erro}')
+            grava_erro_banco(nome_funcao_trat, e, self.nome_arquivo, num_linha_erro)
 
     def lanca_numero(self):
         conecta = conectar_banco_nuvem()
@@ -56,10 +97,8 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -72,10 +111,8 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
     def obter_todos_dados(self):
         conecta = conectar_banco_nuvem()
@@ -114,10 +151,8 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -141,10 +176,8 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -163,10 +196,8 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
     def eventFilter(self, source, event):
         try:
@@ -193,10 +224,8 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
     def excluir_cadastro(self):
         conecta = conectar_banco_nuvem()
@@ -206,30 +235,28 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
             valor = self.line_Valor.text()
 
             if not grupo:
-                mensagem_alerta('O campo "Grupo" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Grupo" não pode estar vazio!')
             elif not codigo:
-                mensagem_alerta('O campo "Código" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Código" não pode estar vazio!')
                 self.combo_Grupo.setFocus()
             elif codigo == "0":
-                mensagem_alerta('O campo "Código" não pode ser "0"!')
+                self.mensagem_alerta('O campo "Código" não pode ser "0"!')
                 self.line_Num.setFocus()
             elif not valor:
-                mensagem_alerta('O campo "Valor" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Valor" não pode estar vazio!')
                 self.line_Valor.setFocus()
             else:
                 cursor = conecta.cursor()
                 cursor.execute(f"DELETE from orcamento where id = {codigo};")
                 conecta.commit()
 
-                mensagem_alerta(f'O Orçamento do Grupo {grupo} foi excluída com sucesso!')
+                self.mensagem_alerta(f'O Orçamento do Grupo {grupo} foi excluída com sucesso!')
                 self.reiniciando_tela()
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -243,25 +270,23 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
             valor = self.line_Valor.text()
 
             if not grupo:
-                mensagem_alerta('O campo "Grupo" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Grupo" não pode estar vazio!')
             elif not codigo:
-                mensagem_alerta('O campo "Código:" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Código:" não pode estar vazio!')
                 self.combo_Grupo.setFocus()
             elif codigo == "0":
-                mensagem_alerta('O campo "Código:" não pode ser "0"!')
+                self.mensagem_alerta('O campo "Código:" não pode ser "0"!')
                 self.line_Num.setFocus()
             elif not valor:
-                mensagem_alerta('O campo "Valor" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Valor" não pode estar vazio!')
                 self.line_Valor.setFocus()
             else:
                 self.salvar_dados()
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -282,7 +307,7 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
             cursor = conecta.cursor()
             cursor.execute(f"SELECT * from orcamento where id = {codigo};")
             registro_id = cursor.fetchall()
-            print(registro_id)
+            print(registro_id, valor_float, id_grupo, grupo)
 
             if registro_id:
                 cursor = conecta.cursor()
@@ -290,24 +315,22 @@ class TelaOrcamento(QMainWindow, Ui_MainWindow):
                                f"valor = '{valor_float}' "
                                f"where id = {codigo};")
 
-                mensagem_alerta(f'O Orçamento do Grupo {grupo} foi alterada com sucesso!')
+                self.mensagem_alerta(f'O Orçamento do Grupo {grupo} foi alterada com sucesso!')
             else:
                 cursor = conecta.cursor()
                 cursor.execute(f'Insert into orcamento '
                                f'(grupo_id, valor) '
                                f'values ({id_grupo}, "{valor_float}");')
 
-                mensagem_alerta(f'O Orçamento do Grupo {grupo} foi criada com sucesso!')
+                self.mensagem_alerta(f'O Orçamento do Grupo {grupo} foi criada com sucesso!')
 
             conecta.commit()
             self.reiniciando_tela()
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():

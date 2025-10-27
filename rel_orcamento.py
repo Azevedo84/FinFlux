@@ -1,16 +1,17 @@
 import sys
 from forms.tela_rel_orcamento import *
-from conexao_nuvem import conectar_banco_nuvem
+from banco_dados.conexao_nuvem import conectar_banco_nuvem
+from banco_dados.controle_erros import grava_erro_banco
 from comandos.telas import tamanho_aplicacao, icone
 from comandos.tabelas import layout_cabec_tab, lanca_tabela, extrair_tabela
 from comandos.conversores import valores_para_float, float_para_moeda_reais, moeda_reais_para_float
 from comandos.cores import cor_branco, cor_vermelho
-from funcao_padrao import grava_erro_banco, trata_excecao
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtGui import QColor, QFont
 import inspect
 import os
 from datetime import datetime
+import traceback
 
 
 class TelaRelatorioOrcamento(QMainWindow, Ui_MainWindow):
@@ -18,13 +19,14 @@ class TelaRelatorioOrcamento(QMainWindow, Ui_MainWindow):
         super().__init__(parent)
         super().setupUi(self)
 
+        self.processando = False
+
         nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
         self.nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
 
-        self.processando = False
-
         icone(self, "gremio.png")
         tamanho_aplicacao(self)
+
         layout_cabec_tab(self.table_Mensal)
         layout_cabec_tab(self.table_Acumulado)
 
@@ -32,6 +34,42 @@ class TelaRelatorioOrcamento(QMainWindow, Ui_MainWindow):
         self.manipula_dados()
 
         self.btn_Consulta.clicked.connect(self.manipula_dados)
+        
+    def mensagem_alerta(self, mensagem):
+        try:
+            alert = QMessageBox()
+            alert.setIcon(QMessageBox.Warning)
+            alert.setText(mensagem)
+            alert.setWindowTitle("Atenção")
+            alert.setStandardButtons(QMessageBox.Ok)
+            alert.exec_()
+
+        except Exception as e:
+            nome_funcao = inspect.currentframe().f_code.co_name
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
+
+    def trata_excecao(self, nome_funcao, mensagem, arquivo, excecao):
+        try:
+            tb = traceback.extract_tb(excecao)
+            num_linha_erro = tb[-1][1]
+
+            traceback.print_exc()
+            print(f'Houve um problema no arquivo: {arquivo} na função: "{nome_funcao}"\n{mensagem} {num_linha_erro}')
+            self.mensagem_alerta(f'Houve um problema no arquivo:\n\n{arquivo}\n\n'
+                                 f'Comunique o desenvolvedor sobre o problema descrito abaixo:\n\n'
+                                 f'{nome_funcao}: {mensagem}')
+
+            grava_erro_banco(nome_funcao, mensagem, arquivo, num_linha_erro)
+
+        except Exception as e:
+            nome_funcao_trat = inspect.currentframe().f_code.co_name
+            exc_traceback = sys.exc_info()[2]
+            tb = traceback.extract_tb(exc_traceback)
+            num_linha_erro = tb[-1][1]
+            print(f'Houve um problema no arquivo: {self.nome_arquivo} na função: "{nome_funcao_trat}"\n'
+                  f'{e} {num_linha_erro}')
+            grava_erro_banco(nome_funcao_trat, e, self.nome_arquivo, num_linha_erro)
 
     def lancar_data_atual(self):
         try:
@@ -49,10 +87,8 @@ class TelaRelatorioOrcamento(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
     def manipula_dados(self):
         conecta = conectar_banco_nuvem()
@@ -76,8 +112,8 @@ class TelaRelatorioOrcamento(QMainWindow, Ui_MainWindow):
 
             except Exception as e:
                 nome_funcao = inspect.currentframe().f_code.co_name
-                trata_excecao(nome_funcao, str(e), self.nome_arquivo)
-                grava_erro_banco(nome_funcao, e, self.nome_arquivo)
+                exc_traceback = sys.exc_info()[2]
+                self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
             finally:
                 self.processando = False
@@ -171,8 +207,8 @@ class TelaRelatorioOrcamento(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            trata_excecao(nome_funcao, str(e), self.nome_arquivo)
-            grava_erro_banco(nome_funcao, e, self.nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -258,8 +294,8 @@ class TelaRelatorioOrcamento(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            trata_excecao(nome_funcao, str(e), self.nome_arquivo)
-            grava_erro_banco(nome_funcao, e, self.nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -283,8 +319,8 @@ class TelaRelatorioOrcamento(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            trata_excecao(nome_funcao, str(e), self.nome_arquivo)
-            grava_erro_banco(nome_funcao, e, self.nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
     def pintar_tabela_acumulado(self):
         try:
@@ -304,8 +340,8 @@ class TelaRelatorioOrcamento(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            trata_excecao(nome_funcao, str(e), self.nome_arquivo)
-            grava_erro_banco(nome_funcao, e, self.nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
 
 if __name__ == '__main__':

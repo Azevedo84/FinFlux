@@ -1,17 +1,18 @@
 import sys
 from forms.tela_desp_cartao import *
-from conexao_nuvem import conectar_banco_nuvem
-from comandos.telas import tamanho_aplicacao
-from comandos.tabelas import lanca_tabela, layout_cabec_tab, extrair_tabela
+from banco_dados.conexao_nuvem import conectar_banco_nuvem
+from banco_dados.controle_erros import grava_erro_banco
+from comandos.telas import tamanho_aplicacao, icone
+from comandos.tabelas import lanca_tabela, layout_cabec_tab, extrair_tabela, limpa_tabela
 from comandos.conversores import valores_para_float
-from funcao_padrao import grava_erro_banco, trata_excecao, mensagem_alerta, limpa_tabela, pergunta_confirmacao
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5 import QtCore
 from PyQt5.QtCore import QDate
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import inspect
 import os
+import traceback
 
 
 class TelaDespCartao(QMainWindow, Ui_MainWindow):
@@ -22,7 +23,9 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
         nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
         self.nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
 
+        icone(self, "gremio.png")
         tamanho_aplicacao(self)
+        
         layout_cabec_tab(self.table_Lista)
 
         self.id_usuario = "1"
@@ -50,6 +53,66 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         self.date_Emissao.setFocus()
 
+    def mensagem_alerta(self, mensagem):
+        try:
+            alert = QMessageBox()
+            alert.setIcon(QMessageBox.Warning)
+            alert.setText(mensagem)
+            alert.setWindowTitle("Atenção")
+            alert.setStandardButtons(QMessageBox.Ok)
+            alert.exec_()
+
+        except Exception as e:
+            nome_funcao = inspect.currentframe().f_code.co_name
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
+
+    def trata_excecao(self, nome_funcao, mensagem, arquivo, excecao):
+        try:
+            tb = traceback.extract_tb(excecao)
+            num_linha_erro = tb[-1][1]
+
+            traceback.print_exc()
+            print(f'Houve um problema no arquivo: {arquivo} na função: "{nome_funcao}"\n{mensagem} {num_linha_erro}')
+            self.mensagem_alerta(f'Houve um problema no arquivo:\n\n{arquivo}\n\n'
+                                 f'Comunique o desenvolvedor sobre o problema descrito abaixo:\n\n'
+                                 f'{nome_funcao}: {mensagem}')
+
+            grava_erro_banco(nome_funcao, mensagem, arquivo, num_linha_erro)
+
+        except Exception as e:
+            nome_funcao_trat = inspect.currentframe().f_code.co_name
+            exc_traceback = sys.exc_info()[2]
+            tb = traceback.extract_tb(exc_traceback)
+            num_linha_erro = tb[-1][1]
+            print(f'Houve um problema no arquivo: {self.nome_arquivo} na função: "{nome_funcao_trat}"\n'
+                  f'{e} {num_linha_erro}')
+            grava_erro_banco(nome_funcao_trat, e, self.nome_arquivo, num_linha_erro)
+
+    def pergunta_confirmacao(self, mensagem):
+        try:
+            confirmacao = QMessageBox()
+            confirmacao.setIcon(QMessageBox.Question)
+            confirmacao.setText(mensagem)
+            confirmacao.setWindowTitle("Confirmação")
+
+            sim_button = confirmacao.addButton("Sim", QMessageBox.YesRole)
+            nao_button = confirmacao.addButton("Não", QMessageBox.NoRole)
+
+            confirmacao.setDefaultButton(nao_button)
+
+            confirmacao.exec_()
+
+            if confirmacao.clickedButton() == sim_button:
+                return True
+            else:
+                return False
+
+        except Exception as e:
+            nome_funcao = inspect.currentframe().f_code.co_name
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
+
     def conecta_banco_lanca_fatura(self):
         try:
             self.lanca_combo_fatura()
@@ -57,10 +120,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
     def calcula_valor_parcela(self, valor, parcelas):
         try:
@@ -79,8 +140,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            trata_excecao(nome_funcao, str(e), self.nome_arquivo)
-            grava_erro_banco(nome_funcao, e, self.nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
     def lanca_saldo_bc(self):
         conecta = conectar_banco_nuvem()
@@ -117,10 +178,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -147,10 +206,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -165,11 +222,10 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
             cursor = conecta.cursor()
             cursor.execute(f"SELECT bc.id, bc.descricao "
-                           f"FROM liga_banco_usuario AS lig_bc_us "
-                           f"left JOIN cadastro_banco as bc ON lig_bc_us.id_banco = bc.id "
-                           f"INNER JOIN liga_banco_tipo AS lig_bc_tp ON lig_bc_tp.id_banco = bc.id "
-                           f"where lig_bc_us.id_usuario = {self.id_usuario} "
-                           f"and lig_bc_tp.id_tipoconta = 1 "
+                           f"FROM saldo_banco AS sal "
+                           f"INNER JOIN cadastro_banco as bc ON sal.id_banco = bc.id "
+                           f"where sal.id_usuario = {self.id_usuario} "
+                           f"and sal.id_tipoconta = 1 "
                            f"order by bc.descricao;")
             lista_completa = cursor.fetchall()
             for ides, descr in lista_completa:
@@ -181,10 +237,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -213,6 +267,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
                 """)
                 lista_completa = cursor.fetchall()
 
+                dd = ""
+
                 for ides, mes, ano in lista_completa:
                     mes_formatado = str(mes).zfill(2)
                     dd = f"{ides} - {mes_formatado}/{ano}"
@@ -232,10 +288,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -245,12 +299,10 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
         data_atual = datetime.now()
 
         fatura_atual = data_atual.strftime("%m/%Y")
-        print(fatura_atual)
 
         item_count = self.combo_Fatura.count()
         for i in range(item_count):
             item_text = self.combo_Fatura.itemText(i)
-            print(item_text)
             if fatura_atual in item_text:
                 self.combo_Fatura.setCurrentText(item_text)
 
@@ -274,10 +326,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -308,10 +358,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -335,10 +383,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -362,10 +408,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -411,10 +455,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -451,10 +493,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
     def eventFilter(self, source, event):
         try:
@@ -508,10 +548,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
     def verifica_salvamento(self):
         try:
@@ -529,52 +567,50 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
             data_emissao = self.date_Emissao.date()
 
             if data_emissao == QDate(2000, 1, 1):
-                mensagem_alerta('O campo "Emissão" deve ser preenchido!')
+                self.mensagem_alerta('O campo "Emissão" deve ser preenchido!')
                 self.date_Emissao.setFocus()
             elif not banco:
-                mensagem_alerta('O campo "Banco" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Banco" não pode estar vazio!')
                 self.combo_Banco.setCurrentText("")
                 self.combo_Banco.setFocus()
             elif not fatura:
-                mensagem_alerta('O campo "Fatura" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Fatura" não pode estar vazio!')
                 self.combo_Fatura.setCurrentText("")
                 self.combo_Fatura.setFocus()
             elif not grupo:
-                mensagem_alerta('O campo "Grupo" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Grupo" não pode estar vazio!')
                 self.combo_Grupo.setCurrentText("")
                 self.combo_Grupo.setFocus()
             elif not categoria:
-                mensagem_alerta('O campo "Categoria" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Categoria" não pode estar vazio!')
                 self.combo_Categoria.setCurrentText("")
                 self.combo_Categoria.setFocus()
             elif not estab:
-                mensagem_alerta('O campo "Estabelecimento" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Estabelecimento" não pode estar vazio!')
                 self.combo_Estab.setCurrentText("")
                 self.combo_Estab.setFocus()
             elif not cidade:
-                mensagem_alerta('O campo "Cidade" não pode estar vazio!')
+                self.mensagem_alerta('O campo "Cidade" não pode estar vazio!')
                 self.combo_Cidade.setCurrentText("")
                 self.combo_Cidade.setFocus()
             elif not valor:
-                mensagem_alerta('O campo "R$" não pode estar vazio!')
+                self.mensagem_alerta('O campo "R$" não pode estar vazio!')
                 self.line_Valor.clear()
                 self.line_Valor.setFocus()
             elif valor == "R$ 0,00":
-                mensagem_alerta('O campo "R$" não pode ser igual a Zero!')
+                self.mensagem_alerta('O campo "R$" não pode ser igual a Zero!')
                 self.line_Valor.clear()
                 self.line_Valor.setFocus()
             elif parcelas == 0:
-                mensagem_alerta('O campo "Número de Parcelas" não pode ser igual a Zero!')
+                self.mensagem_alerta('O campo "Número de Parcelas" não pode ser igual a Zero!')
                 self.spin_Parcelas.setFocus()
             else:
                 self.confere_emissao_com_fatura()
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
     def confere_emissao_com_fatura(self):
         try:
@@ -594,15 +630,13 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
                 self.criar_saldo()
             else:
                 msg = "A Data de Emissão não confere com o mês da Fatura.\nDeseja continuar??"
-                if pergunta_confirmacao(msg):
+                if self.pergunta_confirmacao(msg):
                     self.criar_saldo()
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
     def criar_saldo(self):
         conecta = conectar_banco_nuvem()
@@ -632,10 +666,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -660,7 +692,7 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
                 valor_float = valores_para_float(valor)
 
                 if not obs:
-                    mensagem_alerta('O campo "Observação" não pode estar vazio!')
+                    self.mensagem_alerta('O campo "Observação" não pode estar vazio!')
                     self.plain_Obs.setFocus()
                 else:
                     cursor = conecta.cursor()
@@ -674,10 +706,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -735,15 +765,13 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
             conecta.commit()
 
-            mensagem_alerta(f'A Movimentação foi criada com sucesso!')
+            self.mensagem_alerta(f'A Movimentação foi criada com sucesso!')
             self.reiniciando_tela()
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -812,10 +840,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():
@@ -839,6 +865,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
                 dia_fatura = i + 1
                 mes_fatura_proxima = (data_fatura + relativedelta(months=dia_fatura)).strftime("%m/%Y")
                 proxima_data = (data_mysql + relativedelta(months=i)).strftime("%Y-%m-%d")
+
+                obs_maiusculo = f"{obs_maiusculo} {i + 1}/{parcelas}"
 
                 cursor.execute(f"SELECT vencimento FROM saldo_banco WHERE id = {id_saldo};")
                 dia_venc = cursor.fetchone()[0]
@@ -880,16 +908,14 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
                 conecta.commit()
 
-            mensagem_alerta(f'A Movimentação foi criada com sucesso!')
+            self.mensagem_alerta(f'A Movimentação foi criada com sucesso!')
             self.reiniciando_tela()
 
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name
-            nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
-            nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
-            trata_excecao(nome_funcao, str(e), nome_arquivo)
-            grava_erro_banco(nome_funcao, e, nome_arquivo)
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
 
         finally:
             if 'conexao' in locals():

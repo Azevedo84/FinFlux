@@ -1,11 +1,13 @@
 import sys
 from banco_dados.controle_erros import grava_erro_banco
 from PyQt5.QtCore import QLocale, QRegExp
-from PyQt5.QtGui import QDoubleValidator, QIntValidator, QRegExpValidator
+from PyQt5.QtGui import QDoubleValidator, QRegExpValidator
+from PyQt5 import QtCore
 from datetime import date
 import os
 import inspect
 import traceback
+from PyQt5 import QtGui
 
 nome_arquivo_com_caminho = inspect.getframeinfo(inspect.currentframe()).filename
 nome_arquivo = os.path.basename(nome_arquivo_com_caminho)
@@ -46,11 +48,9 @@ def validador_decimal(nome_line, numero, decimal=3):
         trata_excecao(nome_funcao, str(e), nome_arquivo, exc_traceback)
 
 
-def validador_inteiro(nome_line, numero):
+def validador_inteiro(nome_line):
     try:
-        validator = QIntValidator(0, numero, nome_line)
-        locale = QLocale("pt_BR")
-        validator.setLocale(locale)
+        validator = QtGui.QRegExpValidator(QtCore.QRegExp(r'\d+'), nome_line)
         nome_line.setValidator(validator)
 
     except Exception as e:

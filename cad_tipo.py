@@ -1,6 +1,6 @@
 import sys
 from forms.tela_tipo import *
-from conexao_nuvem import conectar_banco_nuvem
+from banco_dados.conexao_nuvem import conectar_banco_nuvem
 from funcao_padrao import grava_erro_banco, trata_excecao, extrair_tabela, lanca_tabela, mensagem_alerta
 from PyQt5.QtWidgets import QMainWindow, QAbstractItemView, QApplication
 from PyQt5.QtGui import QFont

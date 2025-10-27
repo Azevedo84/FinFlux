@@ -1,6 +1,6 @@
 import sys
 from forms.tela_relatorio_filtro import *
-from conexao_nuvem import conectar_banco_nuvem
+from banco_dados.conexao_nuvem import conectar_banco_nuvem
 from comandos.telas import tamanho_aplicacao
 from comandos.tabelas import layout_cabec_tab, lanca_tabela
 from comandos.conversores import valores_para_float

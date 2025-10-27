@@ -1,7 +1,7 @@
 import sys
 from comandos.conversores import valores_para_float, float_para_moeda_reais
 from forms.tela_rel_grupo import *
-from conexao_nuvem import conectar_banco_nuvem
+from banco_dados.conexao_nuvem import conectar_banco_nuvem
 from funcao_padrao import lanca_tabela
 from comandos.notificacao import tratar_notificar_erros
 from comandos.tabelas import lanca_tabela, layout_cabec_tab, limpa_tabela, extrair_tabela, mensagem_alerta

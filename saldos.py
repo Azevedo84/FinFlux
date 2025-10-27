@@ -1,6 +1,6 @@
 import sys
 from forms.tela_saldos import *
-from conexao_nuvem import conectar_banco_nuvem
+from banco_dados.conexao_nuvem import conectar_banco_nuvem
 from comandos.tabelas import layout_cabec_tab, lanca_tabela
 from comandos.conversores import valores_para_float
 from funcao_padrao import grava_erro_banco, trata_excecao
