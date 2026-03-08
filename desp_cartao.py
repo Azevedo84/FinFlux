@@ -757,11 +757,13 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
             saldo_conta = cursor.fetchall()
             id_saldo, saldo = saldo_conta[0]
 
-            cursor = conecta.cursor()
-            cursor.execute(f'Insert into movimentacao (data, id_saldo, '
-                           f'id_categoria, qtde_ent, qtde_sai, id_estab, id_cidade, id_fatura, obs) '
-                           f'values ("{data_mysql}", {id_saldo}, {id_categoria}, '
-                           f'0, {valor_float}, {id_estab}, {id_cidade}, {id_fatura}, "{obs_maiusculo}");')
+            sql = '''
+                    INSERT INTO movimentacao
+                    (data, id_saldo, id_categoria, qtde_ent, qtde_sai, id_estab, id_cidade, id_fatura, obs)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                '''
+            cursor.execute(sql, (data_mysql, id_saldo, id_categoria, 0, valor_float,
+                                 id_estab, id_cidade, id_fatura, obs_maiusculo))
 
             conecta.commit()
 
@@ -812,6 +814,8 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
 
             parcelas = self.spin_Parcelas.value()
 
+            obs_parcela_um = obs_maiusculo + f"1/{parcelas}"
+
             valor = self.line_Valor.text()
             valor_float = valores_para_float(valor)
 
@@ -825,12 +829,13 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
             saldo_conta = cursor.fetchall()
             id_saldo, saldo = saldo_conta[0]
 
-            cursor = conecta.cursor()
-            cursor.execute(f'Insert into movimentacao (data, id_saldo, '
-                           f'id_categoria, qtde_ent, qtde_sai, id_estab, id_cidade, id_fatura, id_parcela, obs) '
-                           f'values ("{data_mysql}", {id_saldo}, {id_categoria}, '
-                           f'0, {valor_primeira}, {id_estab}, {id_cidade}, {id_fatura}, {id_parcela}, '
-                           f'"{obs_maiusculo}");')
+            sql = '''
+                INSERT INTO movimentacao
+                (data, id_saldo, id_categoria, qtde_ent, qtde_sai, id_estab, id_cidade, id_fatura, id_parcela, obs)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            '''
+            cursor.execute(sql, (data_mysql, id_saldo, id_categoria, 0, valor_primeira,
+                                 id_estab, id_cidade, id_fatura, id_parcela, obs_parcela_um))
 
             conecta.commit()
 
@@ -862,11 +867,16 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
             data_fatura = datetime(ano_fatura, mes_fatura, 1)
 
             for i in range(1, parcelas):
-                dia_fatura = i + 1
-                mes_fatura_proxima = (data_fatura + relativedelta(months=dia_fatura)).strftime("%m/%Y")
-                proxima_data = (data_mysql + relativedelta(months=i)).strftime("%Y-%m-%d")
+                obs_final = ""
 
-                obs_maiusculo = f"{obs_maiusculo} {i + 1}/{parcelas}"
+                dia_fatura = i
+                print("dia_fatura", dia_fatura)
+                mes_fatura_proxima = (data_fatura + relativedelta(months=dia_fatura)).strftime("%m/%Y")
+                print("mes_fatura_proxima", mes_fatura_proxima)
+                proxima_data = (data_mysql + relativedelta(months=i)).strftime("%Y-%m-%d")
+                print("proxima_data", proxima_data)
+
+                obs_final = f"{obs_maiusculo} {i + 1}/{parcelas}"
 
                 cursor.execute(f"SELECT vencimento FROM saldo_banco WHERE id = {id_saldo};")
                 dia_venc = cursor.fetchone()[0]
@@ -890,21 +900,26 @@ class TelaDespCartao(QMainWindow, Ui_MainWindow):
                     id_inserido = cursor.lastrowid
                     conecta.commit()
 
-                    cursor.execute(f'INSERT INTO movimentacao (data, id_saldo, '
-                                   f'id_categoria, qtde_ent, qtde_sai, id_estab, id_cidade, id_fatura, '
-                                   f'id_parcela, obs) '
-                                   f'VALUES ("{proxima_data}", {id_saldo}, {id_categoria}, '
-                                   f'0, {valor_float}, {id_estab}, {id_cidade}, {id_inserido}, {id_parcela}, '
-                                   f'"{obs_maiusculo}");')
+                    sql = '''
+                            INSERT INTO movimentacao
+                            (data, id_saldo, id_categoria, qtde_ent, qtde_sai, id_estab, id_cidade, id_fatura, 
+                            id_parcela, obs)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            '''
+                    cursor.execute(sql, (proxima_data, id_saldo, id_categoria, 0, valor_float,
+                                         id_estab, id_cidade, id_inserido, id_parcela, obs_final))
 
                 else:
                     id_fatiura, mes_fatura, ano_fatura = dados_faturas[0]
-                    cursor.execute(f'INSERT INTO movimentacao (data, id_saldo, '
-                                   f'id_categoria, qtde_ent, qtde_sai, id_estab, id_cidade, id_fatura, '
-                                   f'id_parcela, obs) '
-                                   f'VALUES ("{proxima_data}", {id_saldo}, {id_categoria}, '
-                                   f'0, {valor_float}, {id_estab}, {id_cidade}, {id_fatiura}, {id_parcela}, '
-                                   f'"{obs_maiusculo}");')
+
+                    sql = '''
+                        INSERT INTO movimentacao
+                        (data, id_saldo, id_categoria, qtde_ent, qtde_sai, id_estab, id_cidade, id_fatura, 
+                        id_parcela, obs)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        '''
+                    cursor.execute(sql, (proxima_data, id_saldo, id_categoria, 0, valor_float,
+                                         id_estab, id_cidade, id_fatiura, id_parcela, obs_final))
 
                 conecta.commit()
 

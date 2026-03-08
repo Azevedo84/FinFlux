@@ -5,7 +5,7 @@ from banco_dados.controle_erros import grava_erro_banco
 from comandos.telas import tamanho_aplicacao, icone
 from comandos.tabelas import lanca_tabela, layout_cabec_tab, extrair_tabela
 from comandos.conversores import valores_para_float, valores_para_virgula, float_para_moeda_reais
-from comandos.conversores import float_para_moeda_reais_com_4_casas
+from comandos.conversores import float_para_moeda_reais_com_5_casas
 from comandos.cores import cor_verde, cor_azul, cor_vermelho, widgets
 from comandos.lines import validador_inteiro
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
@@ -43,6 +43,8 @@ class TelaComprasMercado(QMainWindow, Ui_MainWindow):
         self.btn_Excluir_Item.clicked.connect(self.excluir_item_con)
 
         self.btn_Consumir.clicked.connect(self.consumir_produto_tabela)
+
+        self.btn_Atualiza_Prod.clicked.connect(self.lanca_combo_produto)
 
         self.definir_bloqueios()
 
@@ -175,7 +177,7 @@ class TelaComprasMercado(QMainWindow, Ui_MainWindow):
                 self.line_Unit.clear()
                 self.line_Unit.setFocus()
             else:
-                unit_rs = float_para_moeda_reais_com_4_casas(valores_para_float(unit))
+                unit_rs = float_para_moeda_reais_com_5_casas(valores_para_float(unit))
                 total_rs = float_para_moeda_reais(valores_para_float(total))
 
                 produtotete = produto.find(" - ")
@@ -223,19 +225,12 @@ class TelaComprasMercado(QMainWindow, Ui_MainWindow):
                 num_mov = self.line_Num.text()
                 if num_mov:
                     cursor = conecta.cursor()
+
                     cursor.execute(f"SELECT * FROM movimentacao "
                                    f"WHERE id = {num_mov};")
                     lista_registro = cursor.fetchall()
                     if lista_registro:
-                        cursor = conecta.cursor()
-                        cursor.execute(f"SELECT * FROM movimentacao "
-                                       f"WHERE id = {num_mov} and id_categoria = 23;")
-                        lista_completa = cursor.fetchall()
-                        if lista_completa:
-                            self.lanca_dados_mov()
-                        else:
-                            self.mensagem_alerta("Este Registro não se trata de uma despesa de mercado!")
-                            self.reiniciando_tela()
+                        self.lanca_dados_mov()
                     else:
                         self.mensagem_alerta("Este Registro de despesa não existe!")
                         self.reiniciando_tela()
@@ -326,7 +321,7 @@ class TelaComprasMercado(QMainWindow, Ui_MainWindow):
 
                     qtde_virg = valores_para_virgula(qtde)
 
-                    unit_moeda = float_para_moeda_reais_com_4_casas(unit_float)
+                    unit_moeda = float_para_moeda_reais_com_5_casas(unit_float)
                     total_moeda = float_para_moeda_reais(total)
 
                     dados = (id_comp, id_prod, produto, um, qtde_virg, unit_moeda, total_moeda, obs)
@@ -408,6 +403,8 @@ class TelaComprasMercado(QMainWindow, Ui_MainWindow):
             nome_funcao = inspect.currentframe().f_code.co_name
             exc_traceback = sys.exc_info()[2]
             self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
+
+
 
     def limpa_dados_produto(self):
         try:
@@ -526,7 +523,7 @@ class TelaComprasMercado(QMainWindow, Ui_MainWindow):
             unit = self.line_Unit.text()
 
             unit_float = valores_para_float(unit)
-            unit_2casas = ("%.4f" % unit_float)
+            unit_2casas = ("%.5f" % unit_float)
             valor_string = valores_para_virgula(unit_2casas)
             valor_final = "R$ " + valor_string
             self.line_Unit.setText(valor_final)
@@ -647,7 +644,7 @@ class TelaComprasMercado(QMainWindow, Ui_MainWindow):
                         WHERE id = %s
                     """, (id_prod, qtde, unit, obs, id_compra))
 
-            # DELETE → linhas que sumiram da tela mas existem no banco
+            # DELETE → linhas que sumiram da tela, mas existem no banco
             for id_compra in banco_dict.keys():
                 if id_compra not in tabela_dict:
                     cursor.execute("DELETE FROM compras_mercado WHERE id = %s", (id_compra,))

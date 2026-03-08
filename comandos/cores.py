@@ -10,6 +10,7 @@ cor_verde_claro = "#94ffaa"
 cor_verde = "rgb(0, 170, 0)"
 cor_vermelho_claro = "#ff8a82"
 cor_bege = "#FFFFD6"
+transparente = "transparent"
 
 
 # Cores das Tabelas

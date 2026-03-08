@@ -35,6 +35,8 @@ class TelaRelatorioMovMensal(QMainWindow, Ui_MainWindow):
         self.lanca_combo_grupo()
         self.configurar_data_atual()
 
+        self.categorias_remover = '100, 103, 104, 158, 109, 110, 178, 179, 181'
+
         self.combo_Grupo.activated.connect(self.lanca_combo_categoria)
         self.btn_Consulta.clicked.connect(self.manipula_dados)
         self.btn_Excel.clicked.connect(self.gerar_excel)
@@ -283,7 +285,7 @@ class TelaRelatorioMovMensal(QMainWindow, Ui_MainWindow):
             cursor.execute(f"""{texto_padrao}
                         WHERE MONTH(mov.data) = {num_mes}
                           AND YEAR(mov.data) = {ano_int} 
-                          AND gr.id NOT IN (1, 2, 14) AND cat.id NOT IN (103, 158, 110) 
+                          AND gr.id NOT IN (1, 2, 14) AND cat.id NOT IN ({self.categorias_remover}) 
                         {order_by};
                     """)
             lista_completa = cursor.fetchall()
@@ -324,7 +326,7 @@ class TelaRelatorioMovMensal(QMainWindow, Ui_MainWindow):
             cursor.execute(f"""{texto_padrao}
                         WHERE MONTH(mov.data) = {num_mes}
                           AND YEAR(mov.data) = {ano_int} 
-                          AND gr.id NOT IN (1, 2, 14) AND cat.id NOT IN (103, 158, 110) 
+                          AND gr.id NOT IN (1, 2, 14) AND cat.id NOT IN ({self.categorias_remover}) 
                           AND gr.id = {num_grupo} 
                         {order_by};
                     """)
@@ -417,7 +419,7 @@ class TelaRelatorioMovMensal(QMainWindow, Ui_MainWindow):
                 INNER JOIN cadastro_cidade AS cit ON mov.id_cidade = cit.id
                 WHERE MONTH(mov.data) = {num_mes}
                   AND YEAR(mov.data) = {ano_int}
-                  AND gr.id NOT IN (1, 2, 14) AND cat.id NOT IN (103, 158, 110) 
+                  AND gr.id NOT IN (1, 2, 14) AND cat.id NOT IN ({self.categorias_remover}) 
                 GROUP BY gr.descricao
                 ORDER BY total_valor DESC;
             """)
@@ -498,7 +500,7 @@ class TelaRelatorioMovMensal(QMainWindow, Ui_MainWindow):
             cursor = conecta.cursor()
             cursor.execute(f"""{texto_padrao}
                         WHERE YEAR(mov.data) = {ano_int} 
-                          AND gr.id NOT IN (1, 2, 14) AND cat.id NOT IN (103, 158, 110) 
+                          AND gr.id NOT IN (1, 2, 14) AND cat.id NOT IN ({self.categorias_remover}) 
                         {order_by};
                     """)
             lista_completa = cursor.fetchall()
@@ -538,7 +540,7 @@ class TelaRelatorioMovMensal(QMainWindow, Ui_MainWindow):
             cursor = conecta.cursor()
             cursor.execute(f"""{texto_padrao}
                         WHERE YEAR(mov.data) = {ano_int} 
-                          AND gr.id NOT IN (1, 2, 14)  AND cat.id NOT IN (103, 158, 110) 
+                          AND gr.id NOT IN (1, 2, 14)  AND cat.id NOT IN ({self.categorias_remover}) 
                           AND gr.id = {num_grupo} 
                         {order_by};
                     """)
@@ -629,7 +631,7 @@ class TelaRelatorioMovMensal(QMainWindow, Ui_MainWindow):
                 INNER JOIN cadastro_estabelecimento AS estab ON mov.id_estab = estab.id
                 INNER JOIN cadastro_cidade AS cit ON mov.id_cidade = cit.id
                 WHERE YEAR(mov.data) = {ano_int}
-                  AND gr.id NOT IN (1, 2, 14) AND cat.id NOT IN (103, 158, 110) 
+                  AND gr.id NOT IN (1, 2, 14) AND cat.id NOT IN ({self.categorias_remover}) 
                 GROUP BY gr.descricao
                 ORDER BY total_valor DESC;
             """)

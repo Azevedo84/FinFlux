@@ -84,11 +84,9 @@ class TelaMovimentacao(QMainWindow, Ui_MainWindow):
             nova_lista = [""]
 
             cursor = conecta.cursor()
-            cursor.execute(f"SELECT bc.id, bc.descricao "
-                           f"FROM cadastro_banco as bc "
-                           f"INNER JOIN liga_banco_usuario AS lig_bc_us ON bc.id = lig_bc_us.id_banco "
-                           f"where lig_bc_us.id_usuario = {self.id_usuario} "
-                           f"order by bc.descricao;")
+            cursor.execute('SELECT bc.id, bc.descricao '
+                           'FROM cadastro_banco as bc '
+                           'order by bc.descricao;')
             lista_completa = cursor.fetchall()
             for ides, descr in lista_completa:
                 dd = f"{ides} - {descr}"
@@ -116,10 +114,12 @@ class TelaMovimentacao(QMainWindow, Ui_MainWindow):
             nova_lista = [""]
 
             cursor = conecta.cursor()
-            cursor.execute(f"SELECT tip.id, tip.descricao "
-                           f"FROM cadastro_tipoconta as tip "
-                           f"INNER JOIN liga_banco_tipo AS lig_bc_tp ON tip.id = lig_bc_tp.id_tipoconta "
-                           f"where lig_bc_tp.id_banco = {id_banco} "
+            cursor.execute(f"SELECT sal.id_tipoconta, tip.descricao "
+                           f"FROM saldo_banco AS sal "
+                           f"INNER JOIN cadastro_banco as bc ON sal.id_banco = bc.id "
+                           f"INNER JOIN cadastro_tipoconta as tip ON sal.id_tipoconta = tip.id "
+                           f"where sal.id_usuario = {self.id_usuario} "
+                           f"and sal.id_banco = {id_banco} "
                            f"order by tip.descricao;")
             lista_completa = cursor.fetchall()
             for ides, descr in lista_completa:
@@ -175,8 +175,11 @@ class TelaMovimentacao(QMainWindow, Ui_MainWindow):
     def manipula_dados(self):
         conecta = conectar_banco_nuvem()
         try:
+            self.table_Lista.setRowCount(0)
+
             banco = self.combo_Banco.currentText()
             tipo = self.combo_Tipo.currentText()
+
             fatura = self.combo_Fatura.currentText()
 
             select_padrao = (f"SELECT mov.id, DATE_FORMAT(mov.data, '%d/%m/%Y') AS data_formatada, "

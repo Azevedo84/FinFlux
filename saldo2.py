@@ -31,10 +31,13 @@ class TelaSaldos(QMainWindow, Ui_MainWindow):
         layout_cabec_tab(self.table_Top10Categorias)
         layout_cabec_tab(self.table_Top10Grupos)
 
-        self.valor_pagamento = 2100
+        self.valor_pagamento = 2000
         self.valor_adiantamento = 1000
+        self.valor_limite = 3000
 
-        self.categ_impostos = "103, 110, 158, 181"
+        self.categ_receitas = "1, 2, 3, 4, 5, 151"
+
+        self.categ_impostos = "103, 110, 158, 181, 109"
 
         self.obter_saldo_atual()
         self.obter_saldo_investimentos()
@@ -47,6 +50,8 @@ class TelaSaldos(QMainWindow, Ui_MainWindow):
         self.obter_top_dez_grupos()
 
         self.definir_movimentacao()
+
+        self.obter_rendimento_atual()
 
     def mensagem_alerta(self, mensagem):
         try:
@@ -89,8 +94,7 @@ class TelaSaldos(QMainWindow, Ui_MainWindow):
         try:
             cursor = conecta.cursor()
             cursor.execute(f"SELECT "
-                           f"SUM(CASE WHEN id_categoria IN (1, 2, 3, 4, 5, 151) THEN qtde_ent ELSE 0 END) - "
-                           f"SUM(CASE WHEN id_categoria IN ({self.categ_impostos}) THEN qtde_sai ELSE 0 END) AS saldo "
+                           f"SUM(IF(id_categoria IN ({self.categ_receitas}), qtde_ent, 0)) "
                            f"FROM movimentacao "
                            f"WHERE YEAR(data) = YEAR(CURDATE()) "
                            f"AND MONTH(data) = MONTH(CURDATE());")
@@ -305,6 +309,19 @@ class TelaSaldos(QMainWindow, Ui_MainWindow):
                            f"FROM movimentacao AS mov "
                            f"WHERE mov.DATA >= '{ini_atual}' "
                            f"AND mov.DATA < '{fim_atual}' "
+                           f"and mov.id_categoria = 102;")
+            lista_curso_atual = cursor.fetchall()
+
+            if not lista_curso_atual:
+                if data_atual.month == 12:
+                    dados = (f"30/12/2025", f"IPVA {ano_atual + 1}", "", 1000)
+                    lista_final.append(dados)
+
+            cursor = conecta.cursor()
+            cursor.execute(f"SELECT mov.data, mov.qtde_sai "
+                           f"FROM movimentacao AS mov "
+                           f"WHERE mov.DATA >= '{ini_atual}' "
+                           f"AND mov.DATA < '{fim_atual}' "
                            f"and mov.id_categoria = 180;")
             lista_curso_atual = cursor.fetchall()
 
@@ -323,7 +340,7 @@ class TelaSaldos(QMainWindow, Ui_MainWindow):
             lista_pagamentos_proximo_mes = cursor.fetchall()
 
             if not lista_pagamentos_proximo_mes:
-                dados = (f"05/{mes_atual + 1}/{ano}", f"PAGAMENTO", self.valor_pagamento, "")
+                dados = (f"05/{prox_mes}/{ano}", f"PAGAMENTO", self.valor_pagamento, "")
                 lista_final.append(dados)
 
             cursor = conecta.cursor()
@@ -337,7 +354,7 @@ class TelaSaldos(QMainWindow, Ui_MainWindow):
             lista_adiantamentos_proximo_mes = cursor.fetchall()
 
             if not lista_adiantamentos_proximo_mes:
-                dados = (f"21/{mes_atual + 1}/{ano}", f"ADIANTAMENTO", self.valor_adiantamento, "")
+                dados = (f"21/{prox_mes}/{ano}", f"ADIANTAMENTO", self.valor_adiantamento, "")
                 lista_final.append(dados)
 
             cursor = conecta.cursor()
@@ -349,7 +366,7 @@ class TelaSaldos(QMainWindow, Ui_MainWindow):
             lista_curso_proximo_mes = cursor.fetchall()
 
             if not lista_curso_proximo_mes:
-                dados = (f"06/{mes_atual + 1}/{ano}", "CURSO PÓS", "", 99)
+                dados = (f"06/{prox_mes}/{ano}", "CURSO PÓS", "", 99)
                 lista_final.append(dados)
 
             # Conectando ao banco de dados e obtendo os dados de saldo bancário
@@ -489,7 +506,7 @@ class TelaSaldos(QMainWindow, Ui_MainWindow):
 
                 saldo_float = valores_para_float(saldo_certo)
 
-                if saldo_float < 3000:
+                if saldo_float < self.valor_limite:
                     tabela.item(index, 4).setBackground(QColor(cor_vermelho))
                     tabela.item(index, 4).setForeground(QColor(cor_branco))
 
@@ -509,7 +526,7 @@ class TelaSaldos(QMainWindow, Ui_MainWindow):
                            f"FROM saldo_banco as sald "
                            f"INNER JOIN cadastro_banco as bc ON sald.id_banco = bc.id "
                            f"WHERE sald.saldo <> 0 AND sald.id_usuario = 1 "
-                           f"AND sald.id_tipoconta in (2, 4) AND sald.id_banco <> 26 "
+                           f"AND sald.id_tipoconta in (2, 4) "
                            f"order by bc.descricao;")
             dados_saldo = cursor.fetchall()
 
@@ -621,6 +638,55 @@ class TelaSaldos(QMainWindow, Ui_MainWindow):
 
             if nova_lista:
                 lanca_tabela(self.table_Top10Grupos, nova_lista)
+
+        except Exception as e:
+            nome_funcao = inspect.currentframe().f_code.co_name
+            exc_traceback = sys.exc_info()[2]
+            self.trata_excecao(nome_funcao, str(e), self.nome_arquivo, exc_traceback)
+
+        finally:
+            if 'conexao' in locals():
+                conecta.close()
+
+    def obter_rendimento_atual(self):
+        conecta = conectar_banco_nuvem()
+        try:
+            cursor = conecta.cursor()
+            cursor.execute("""
+                SELECT bc.descricao AS banco,
+                       SUM(mov.qtde_ent) AS total_rendimento
+                FROM movimentacao AS mov
+                INNER JOIN saldo_banco AS sb ON mov.id_saldo = sb.id
+                INNER JOIN cadastro_banco AS bc ON sb.id_banco = bc.id
+                WHERE mov.id_categoria = 117
+                  AND YEAR(mov.data) = YEAR(CURDATE())
+                  AND MONTH(mov.data) = MONTH(CURDATE())
+                GROUP BY bc.descricao
+                ORDER BY total_rendimento DESC;
+            """)
+
+            rendimentos = cursor.fetchall()
+
+            lista_rendi = []
+            total_mes = 0
+
+            if rendimentos:
+                for banco, valor in rendimentos:
+                    valor_float = valores_para_float(valor)
+                    total_mes += valor_float
+
+                    valor_fmt = float_para_moeda_reais(round(valor_float, 2))
+
+                    lista_rendi.append((banco, valor_fmt))
+
+            # soma geral do mês
+            if total_mes:
+                total_fmt = float_para_moeda_reais(round(total_mes, 2))
+                self.label_Rendimentos.setText(total_fmt)
+
+            # exibir na tabela
+            if lista_rendi:
+                lanca_tabela(self.table_Rendimentos, lista_rendi)
 
         except Exception as e:
             nome_funcao = inspect.currentframe().f_code.co_name

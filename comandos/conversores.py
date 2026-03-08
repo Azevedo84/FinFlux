@@ -136,14 +136,14 @@ def float_para_virgula(valor_float):
         nome_funcao = inspect.currentframe().f_code.co_name
         tratar_notificar_erros(e, nome_funcao, nome_arquivo)
 
-def float_para_moeda_reais_com_4_casas(valor):
+def float_para_moeda_reais_com_5_casas(valor):
     try:
         valor_float = valores_para_float(valor)
 
         locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
         # Formata manualmente com 4 casas decimais e separadores locais
-        valor_formatado = f"R$ {valor_float:,.4f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        valor_formatado = f"R$ {valor_float:,.5f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
         return valor_formatado
 

@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>520</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>880</width>
+    <height>500</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1000</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Finflux • Cartão de Crédito</string>
+  </property>
+
+  <property name="styleSheet">
+   <string notr="true">
+QMainWindow{
+ background:#f4f6fb;
+ font-family:Segoe UI;
+}
+
+QFrame.card{
+ background:white;
+ border:1px solid #e6e8ef;
+ border-radius:8px;
+}
+
+QLabel.title{
+ font-size:18px;
+ font-weight:600;
+}
+
+QLabel.section{
+ font-size:13px;
+ font-weight:600;
+ color:#444;
+}
+
+QLineEdit,QComboBox,QSpinBox,QDoubleSpinBox,QDateEdit{
+ border:1px solid #d6d9e0;
+ border-radius:6px;
+ padding:5px;
+ min-height:24px;
+}
+
+QPushButton{
+ background:#2b6ef2;
+ color:white;
+ border-radius:6px;
+ padding:6px 14px;
+ font-weight:600;
+}
+
+QPushButton:hover{
+ background:#1f56c9;
+}
+
+QTableView{
+ border:none;
+ background:white;
+ gridline-color:#eceef4;
+}
+</string>
+  </property>
+
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <property name="spacing">
+     <number>10</number>
+    </property>
+    <property name="leftMargin">
+     <number>12</number>
+    </property>
+    <property name="topMargin">
+     <number>12</number>
+    </property>
+    <property name="rightMargin">
+     <number>12</number>
+    </property>
+    <property name="bottomMargin">
+     <number>12</number>
+    </property>
+
+    <!-- HEADER -->
+    <item>
+     <widget class="QFrame" name="headerCard">
+      <property name="class">
+       <string>card</string>
+      </property>
+      <layout class="QHBoxLayout">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+
+       <item>
+        <widget class="QLabel" name="labelTitulo">
+         <property name="text">
+          <string>💳 Despesa no Cartão</string>
+         </property>
+         <property name="class">
+          <string>title</string>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <spacer name="spacerTop">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </spacer>
+       </item>
+
+       <item>
+        <widget class="QComboBox" name="combo_Banco"/>
+       </item>
+
+       <item>
+        <widget class="QComboBox" name="combo_Fatura"/>
+       </item>
+
+       <item>
+        <widget class="QDateEdit" name="date_Emissao"/>
+       </item>
+
+      </layout>
+     </widget>
+    </item>
+
+    <!-- BODY -->
+    <item>
+     <layout class="QHBoxLayout" name="bodyLayout">
+      <property name="spacing">
+       <number>12</number>
+      </property>
+
+      <!-- LEFT SIDE -->
+      <item>
+       <layout class="QVBoxLayout">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+
+        <!-- QUICK ENTRY -->
+        <item>
+         <widget class="QFrame" name="cardLancamento">
+          <property name="class">
+           <string>card</string>
+          </property>
+          <layout class="QVBoxLayout">
+           <property name="spacing">
+            <number>8</number>
+           </property>
+
+           <item>
+            <widget class="QLabel">
+             <property name="text">
+              <string>Lançamento rápido</string>
+             </property>
+             <property name="class">
+              <string>section</string>
+             </property>
+            </widget>
+           </item>
+
+           <item>
+            <widget class="QLineEdit" name="line_busca_estabelecimento">
+             <property name="placeholderText">
+              <string>🔎 Digite o estabelecimento...</string>
+             </property>
+            </widget>
+           </item>
+
+           <item>
+            <layout class="QGridLayout">
+
+             <item row="0" column="0">
+              <widget class="QComboBox" name="combo_Categoria"/>
+             </item>
+
+             <item row="0" column="1">
+              <widget class="QComboBox" name="combo_Cidade"/>
+             </item>
+
+             <item row="1" column="0">
+              <widget class="QDoubleSpinBox" name="spin_Valor"/>
+             </item>
+
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="spin_Parcelas"/>
+             </item>
+
+            </layout>
+           </item>
+
+           <item>
+            <widget class="QPlainTextEdit" name="plain_Obs">
+             <property name="maximumHeight">
+              <number>60</number>
+             </property>
+            </widget>
+           </item>
+
+           <item>
+            <layout class="QHBoxLayout">
+
+             <item>
+              <spacer name="spacerButtons">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </spacer>
+             </item>
+
+             <item>
+              <widget class="QPushButton" name="btn_Limpar">
+               <property name="text">
+                <string>Limpar</string>
+               </property>
+              </widget>
+             </item>
+
+             <item>
+              <widget class="QPushButton" name="btn_Salvar">
+               <property name="text">
+                <string>Salvar</string>
+               </property>
+              </widget>
+             </item>
+
+            </layout>
+           </item>
+
+          </layout>
+         </widget>
+        </item>
+
+        <!-- SUGGESTIONS -->
+        <item>
+         <widget class="QFrame" name="cardSugestoes">
+          <property name="class">
+           <string>card</string>
+          </property>
+          <layout class="QVBoxLayout">
+
+           <item>
+            <widget class="QLabel">
+             <property name="text">
+              <string>Sugestões</string>
+             </property>
+             <property name="class">
+              <string>section</string>
+             </property>
+            </widget>
+           </item>
+
+           <item>
+            <widget class="QTableView" name="table_Sugestoes"/>
+           </item>
+
+          </layout>
+         </widget>
+        </item>
+
+       </layout>
+      </item>
+
+      <!-- RIGHT SIDE -->
+      <item>
+       <widget class="QFrame" name="cardHistorico">
+        <property name="class">
+         <string>card</string>
+        </property>
+        <layout class="QVBoxLayout">
+
+         <item>
+          <widget class="QLabel">
+           <property name="text">
+            <string>Últimos lançamentos</string>
+           </property>
+           <property name="class">
+            <string>section</string>
+           </property>
+          </widget>
+         </item>
+
+         <item>
+          <widget class="QTableView" name="table_Historico"/>
+         </item>
+
+        </layout>
+       </widget>
+      </item>
+
+     </layout>
+    </item>
+
+   </layout>
+  </widget>
+
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

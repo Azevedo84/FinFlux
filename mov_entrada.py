@@ -189,11 +189,9 @@ class TelaEntrada(QMainWindow, Ui_MainWindow):
             nova_lista = [""]
 
             cursor = conecta.cursor()
-            cursor.execute(f"SELECT bc.id, bc.descricao "
-                           f"FROM liga_banco_usuario AS lig_bc_us "
-                           f"left JOIN cadastro_banco as bc ON lig_bc_us.id_banco = bc.id "
-                           f"where lig_bc_us.id_usuario = {self.id_usuario} "
-                           f"order by bc.descricao;")
+            cursor.execute('SELECT bc.id, bc.descricao '
+                           'FROM cadastro_banco as bc '
+                           'order by bc.descricao;')
             lista_completa = cursor.fetchall()
             for ides, descr in lista_completa:
                 dd = f"{ides} - {descr}"
@@ -221,10 +219,12 @@ class TelaEntrada(QMainWindow, Ui_MainWindow):
             nova_lista = [""]
 
             cursor = conecta.cursor()
-            cursor.execute(f"SELECT tip.id, tip.descricao "
-                           f"FROM cadastro_tipoconta as tip "
-                           f"INNER JOIN liga_banco_tipo AS lig_bc_tp ON tip.id = lig_bc_tp.id_tipoconta "
-                           f"where lig_bc_tp.id_banco = {id_banco} "
+            cursor.execute(f"SELECT sal.id_tipoconta, tip.descricao "
+                           f"FROM saldo_banco AS sal "
+                           f"INNER JOIN cadastro_banco as bc ON sal.id_banco = bc.id "
+                           f"INNER JOIN cadastro_tipoconta as tip ON sal.id_tipoconta = tip.id "
+                           f"where sal.id_usuario = {self.id_usuario} "
+                           f"and sal.id_banco = {id_banco} "
                            f"order by tip.descricao;")
             lista_completa = cursor.fetchall()
             for ides, descr in lista_completa:

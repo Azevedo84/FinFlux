@@ -580,7 +580,10 @@
                    <string/>
                   </property>
                   <property name="maxLength">
-                   <number>45</number>
+                   <number>120</number>
+                  </property>
+                  <property name="cursorPosition">
+                   <number>0</number>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -676,6 +679,11 @@
                   <item>
                    <property name="text">
                     <string>GR</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>ML</string>
                    </property>
                   </item>
                  </widget>

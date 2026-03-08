@@ -2,12 +2,12 @@ from banco_dados.conexao_nuvem import conectar_banco_nuvem
 
 conecta = conectar_banco_nuvem()
 try:
-    # BRADESCO = 5 / C6 = 6 / NUBANK = 12 / XP = 19 / SAMSUNG = 22 / AMAZON = 27
+    # BRADESCO = 5 / C6 = 6 / NUBANK = 12 / XP = 19 / SAMSUNG = 22 / AMAZON = 27 / SOFISA = 18
 
-    id_banco = 27
-    mes = "10"
-    ano = "2025"
-    vencimento = "2025-11-15"
+    id_banco = 6
+    mes = "03"
+    ano = "2026"
+    vencimento = "2026-04-15"
 
     cursor = conecta.cursor()
     cursor.execute(f"SELECT id, saldo FROM saldo_banco "

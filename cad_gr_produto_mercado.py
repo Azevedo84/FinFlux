@@ -88,8 +88,8 @@ class TelaGrupoMercado(QMainWindow, Ui_MainWindow):
             tabela_nova = []
 
             cursor = conecta.cursor()
-            cursor.execute('SELECT id, criacao, descricao, COALESCE(obs, "") '
-                           'FROM cadastro_gr_produto_mercado order by descricao;')
+            cursor.execute("SELECT id, criacao, descricao, obs "
+                           "FROM cadastro_gr_produto_mercado order by descricao;")
             lista_completa = cursor.fetchall()
 
             if lista_completa:
